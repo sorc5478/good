@@ -12,4 +12,33 @@
         "description": "關於前端開發的經驗分享",
         "filename": "second-post.md",
         "slug": "second-post"
+    },
+    {
+        "title": "JavaScript 閉包教學",
+        "date": "2024-03-25",
+        "description": "深入講解閉包概念與實戰應用",
+        "filename": "tech-tutorial.md",
+        "slug": "closure-tutorial"
+    },
+    {
+        "title": "台北咖啡廳探索日記",
+        "date": "2024-03-24",
+        "description": "大安區特色咖啡廳分享",
+        "filename": "life-notes.md",
+        "slug": "taipei-cafe"
+    },
+    {
+        "title": "2024 前端趨勢預測",
+        "date": "2024-03-23",
+        "description": "年度技術趨勢分析報告",
+        "filename": "web-news.md",
+        "slug": "2024-trends"
+    },
+    {
+        "title": "從零開始建立靜態部落格",
+        "date": "2024-03-22",
+        "description": "手把手教學建立現代化靜態部落格",
+        "filename": "getting-started.md",
+        "slug": "getting-started"
     }
+] 
