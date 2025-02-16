@@ -13,7 +13,8 @@
         "filename": "second-post.md",
         "slug": "second-post"
     }
-] + {
+]
++ {
 +     "title": "從零開始建立靜態部落格",
 +     "date": "2024-03-25",
 +     "description": "手把手教學建立現代化靜態部落格",
