@@ -236,23 +236,45 @@
 
     <div id="pagination" class="pagination"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // 文章資料
-        const articles = [
-            // 您的文章將會放在這裡
-            /*
-            文章格式範例：
-            {
-                id: 1,
-                title: "文章標題",
-                date: "發布日期",
-                content: "文章內容...",
-                excerpt: "文章摘要",
-                slug: "article-url-slug",
-                image: "./images/article-image.jpg"
+        async function loadArticles() {
+            try {
+                const response = await fetch('https://api.github.com/repos/[your-username]/blog/contents/_posts');
+                const files = await response.json();
+                
+                const articles = await Promise.all(
+                    files.map(async file => {
+                        const content = await fetch(file.download_url);
+                        const text = await content.text();
+                        const [frontMatter, ...contentArr] = text.split('---\n');
+                        const metadata = parseFrontMatter(frontMatter);
+                        return {
+                            ...metadata,
+                            content: contentArr.join('---\n'),
+                            id: file.name.replace('.md', '')
+                        };
+                    })
+                );
+                
+                renderArticles(articles.slice(0, perPage));
+            } catch (error) {
+                console.error('Error loading articles:', error);
             }
-            */
-        ];
+        }
+
+        function parseFrontMatter(text) {
+            const lines = text.split('\n');
+            const data = {};
+            lines.forEach(line => {
+                const [key, value] = line.split(': ');
+                if (key && value) {
+                    data[key.trim()] = value.trim();
+                }
+            });
+            return data;
+        }
 
         // 分頁功能
         let currentPage = 1;
@@ -362,7 +384,7 @@
         });
 
         // 初始化
-        renderArticles();
+        loadArticles();
     </script>
 </body>
 </html> 
