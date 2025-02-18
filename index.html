@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="分享好用的AI工具與使用技巧">
+    <meta name="keywords" content="AI工具,ChatGPT,人工智能,AI應用,AI教學">
+    <meta name="author" content="Zhi">
+    <link rel="canonical" href="https://zhiwehu.github.io/blog/" />
+    <title>好用AI分享</title>
+    <style>
+        /* 簡約風格CSS */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .article-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .article-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.5));
+        }
+
+        .article-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-box {
+            width: 300px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding-right: 40px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: calc(50% - 130px);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23666" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/%3E%3C/svg%3E');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-right: 15px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+        }
+        
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .share-btn.fb {
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"%3E%3Cpath fill="%233b5998" d="M42,11.5v25A5.5,5.5,0,0,1,36.5,42h-25A5.5,5.5,0,0,1,6,36.5v-25A5.5,5.5,0,0,1,11.5,6h25A5.5,5.5,0,0,1,42,11.5Z"/%3E%3Cpath fill="%23fff" d="M34.3,24H31v12H26V24H23V19h3V17.2c0-4.2,1.8-6.7,6.8-6.7H36v5h-3.1c-1.8,0-2.9.2-2.9,1.5V19h6L34.3,24Z"/%3E%3C/svg%3E');
+        }
+        .share-btn.ig {
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"%3E%3Cpath fill="%23f00075" d="M42,11.5v25A5.5,5.5,0,0,1,36.5,42h-25A5.5,5.5,0,0,1,6,36.5v-25A5.5,5.5,0,0,1,11.5,6h25A5.5,5.5,0,0,1,42,11.5z"/%3E%3Cpath fill="%23fff" d="M24,14c-5.5,0-10,4.5-10,10s4.5,10,10,10s10-4.5,10-10S29.5,14,24,14z M24,30c-3.3,0-6-2.7-6-6s2.7-6,6-6s6,2.7,6,6 S27.3,30,24,30z M34,14c0,1.1-0.9,2-2,2s-2-0.9-2-2s0.9-2,2-2S34,12.9,34,14z"/%3E%3C/svg%3E');
+        }
+        .share-btn.line {
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"%3E%3Crect width="48" height="48" rx="8" fill="%2300C300"/%3E%3Cpath fill="%23fff" d="M41.4721 21.6897C41.4721 13.959 34.8296 7.67172 26.6796 7.67172C18.5296 7.67172 11.8872 13.959 11.8872 21.6897C11.8872 28.7062 17.169 34.5182 24.3781 35.4634C25.0555 35.6045 25.9357 35.8336 26.1772 36.4089C26.3947 36.9373 26.3085 37.7279 26.2274 38.2924C26.2274 38.2924 26.0391 39.3633 25.9839 39.6058C25.8867 40.0141 25.5804 41.6105 27.9367 40.6757C30.2947 39.7392 37.5258 35.1468 40.6914 31.4984L40.6897 31.5001C41.1912 30.8936 41.4721 30.1952 41.4721 29.4504V21.6897ZM24.0091 27.5415H21.3356C20.9795 27.5415 20.6907 27.2545 20.6907 26.8984V19.8009C20.6907 19.4448 20.9795 19.1578 21.3356 19.1578H24.0091C24.3652 19.1578 24.654 19.4448 24.654 19.8009V26.8984C24.654 27.2545 24.3652 27.5415 24.0091 27.5415ZM31.2243 27.5415H28.5508C28.1947 27.5415 27.9059 27.2545 27.9059 26.8984V19.8009C27.9059 19.4448 28.1947 19.1578 28.5508 19.1578H31.2243C31.5804 19.1578 31.8692 19.4448 31.8692 19.8009V26.8984C31.8692 27.2545 31.5804 27.5415 31.2243 27.5415Z"/%3E%3C/svg%3E');
+        }
+        .share-btn.twitter {
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"%3E%3Cpath fill="%231DA1F2" d="M42,11.5v25A5.5,5.5,0,0,1,36.5,42h-25A5.5,5.5,0,0,1,6,36.5v-25A5.5,5.5,0,0,1,11.5,6h25A5.5,5.5,0,0,1,42,11.5Z"/%3E%3Cpath fill="%23fff" d="M36.8,16.3c-1,0.4-2,0.7-3.1,0.8c1.1-0.7,2-1.7,2.4-3c-1.1,0.6-2.3,1.1-3.5,1.3c-1-1.1-2.4-1.7-4-1.7c-3,0-5.5,2.5-5.5,5.5c0,0.4,0,0.8,0.1,1.2c-4.6-0.2-8.6-2.4-11.3-5.7c-0.5,0.8-0.7,1.7-0.7,2.7c0,1.9,1,3.6,2.4,4.6c-0.9,0-1.7-0.3-2.5-0.7v0.1c0,2.7,1.9,4.9,4.4,5.4c-0.5,0.1-0.9,0.2-1.4,0.2c-0.3,0-0.7,0-1-0.1c0.7,2.2,2.7,3.8,5.1,3.8c-1.9,1.5-4.2,2.3-6.8,2.3c-0.4,0-0.9,0-1.3-0.1c2.4,1.5,5.2,2.4,8.3,2.4c9.9,0,15.3-8.2,15.3-15.3c0-0.2,0-0.5,0-0.7C35.2,18.3,36.1,17.4,36.8,16.3z"/%3E%3C/svg%3E');
+        }
+        .share-btn.copy {
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"%3E%3Cpath fill="%23424242" d="M42,11.5v25A5.5,5.5,0,0,1,36.5,42h-25A5.5,5.5,0,0,1,6,36.5v-25A5.5,5.5,0,0,1,11.5,6h25A5.5,5.5,0,0,1,42,11.5z"/%3E%3Cpath fill="%23fff" d="M32,16H20c-2.2,0-4,1.8-4,4v12c0,2.2,1.8,4,4,4h12c2.2,0,4-1.8,4-4V20C36,17.8,34.2,16,32,16z M34,32 c0,1.1-0.9,2-2,2H20c-1.1,0-2-0.9-2-2V20c0-1.1,0.9-2,2-2h12c1.1,0,2,0.9,2,2V32z M28,12h-12c-2.2,0-4,1.8-4,4h2c0-1.1,0.9-2,2-2 h12c1.1,0,2,0.9,2,2v12c0,1.1-0.9,2-2,2v2c2.2,0,4-1.8,4-4v-12C32,13.8,30.2,12,28,12z"/%3E%3C/svg%3E');
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .pagination button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .article-card {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .article-image {
+                height: 150px;
+                border-radius: 8px 8px 0 0;
+            }
+            
+            .article-content {
+                padding: 1rem;
+            }
+        }
+
+        /* 閱讀全文按鈕美化 */
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .read-more:hover {
+            background-color: #1a2a3a;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .read-more::after {
+            content: '→';
+            margin-left: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .read-more:hover::after {
+            transform: translateX(3px);
+        }
+
+        .article-image h2 {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
+            line-height: 1.2;
+            max-width: 80%;
+        }
+
+        @media (max-width: 768px) {
+            .article-image h2 {
+                font-size: 1.4rem;
+                bottom: 0.5rem;
+                left: 0.5rem;
+            }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <span class="search-icon"></span>
+        <input type="text" id="searchInput" class="search-box" placeholder="搜尋站內文章...">
+    </div>
+
+    <div id="articlesContainer">
+        <!-- 文章會由JavaScript動態載入 -->
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
+    <script>
+        // 文章資料
+        const articles = [
+            // 您的文章將會放在這裡
+            /*
+            文章格式範例：
+            {
+                id: 1,
+                title: "文章標題",
+                date: "發布日期",
+                content: "文章內容...",
+                excerpt: "文章摘要",
+                slug: "article-url-slug",
+                image: "./images/article-image.jpg"
+            }
+            */
+        ];
+
+        // 分頁功能
+        let currentPage = 1;
+        const perPage = 8;
+
+        function renderArticles(articlesToRender = articles.slice(0, perPage)) {
+            const articlesHTML = articlesToRender.map(article => `
+                <article class="article-card">
+                    <div class="article-image" 
+                         data-bg="url('${article.image}')" 
+                         class="lazyload">
+                        <h2 style="position: absolute; bottom: 1rem; left: 1rem; color: white; z-index: 1; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                            ${article.title}
+                        </h2>
+                    </div>
+                    <div class="article-content">
+                        <div class="meta">${article.date} • ${article.excerpt}</div>
+                        <p>${article.content.substring(0, 100)}...</p>
+                        <div class="share-buttons">
+                            <button class="share-btn fb" title="分享到Facebook" 
+                                onclick="shareTo('fb', '${article.slug}')"></button>
+                            <button class="share-btn line" title="分享到LINE" 
+                                onclick="shareTo('line', '${article.slug}')"></button>
+                            <button class="share-btn twitter" title="分享到Twitter" 
+                                onclick="shareTo('twitter', '${article.slug}')"></button>
+                            <button class="share-btn ig" title="分享到Instagram" 
+                                onclick="shareTo('ig', '${article.slug}')"></button>
+                            <button class="share-btn copy" title="複製連結" 
+                                onclick="shareTo('copy', '${article.slug}')"></button>
+                        </div>
+                        <a href="./post/${article.slug}.html" class="read-more">繼續閱讀</a>
+                    </div>
+                </article>
+            `).join('');
+
+            document.getElementById('articlesContainer').innerHTML = articlesHTML || 
+            `<div class="no-results">找不到符合條件的文章</div>`;
+            updatePagination(Math.ceil(articles.length / perPage));
+        }
+
+        // 完善搜尋功能
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredArticles = articles.filter(article => {
+                return article.title.toLowerCase().includes(searchTerm) ||
+                       article.content.toLowerCase().includes(searchTerm) ||
+                       article.excerpt.toLowerCase().includes(searchTerm);
+            });
+            
+            currentPage = 1; // 重置分頁
+            const totalPages = Math.ceil(filteredArticles.length / perPage);
+            updatePagination(totalPages);
+            
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const paginatedArticles = filteredArticles.slice(start, end);
+            
+            renderArticles(paginatedArticles); // 需修改renderArticles函式
+        });
+
+        // 分享功能
+        function shareTo(platform, slug) {
+            const url = `https://zhiwehu.github.io/blog/post/${slug}.html`;
+            switch(platform) {
+                case 'fb':
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+                    break;
+                case 'ig':
+                    window.open(`https://www.instagram.com/create/story?url=${encodeURIComponent(url)}`);
+                    break;
+                case 'line':
+                    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`);
+                    break;
+                case 'twitter':
+                    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`);
+                    break;
+                case 'copy':
+                    navigator.clipboard.writeText(url);
+                    alert('連結已複製！');
+                    break;
+            }
+        }
+
+        function updatePagination(totalPages) {
+            const paginationDiv = document.getElementById('pagination');
+            paginationDiv.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = i === currentPage ? 'active' : '';
+                button.onclick = () => {
+                    currentPage = i;
+                    renderArticles();
+                };
+                paginationDiv.appendChild(button);
+            }
+        }
+
+        // 加入lazysizes庫
+        document.addEventListener("DOMContentLoaded", function() {
+            if ('loading' in HTMLImageElement.prototype) {
+                // 原生懶加載
+            } else {
+                // 使用lazysizes polyfill
+            }
+        });
+
+        // 初始化
+        renderArticles();
+    </script>
+</body>
+</html> 
