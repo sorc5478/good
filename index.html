@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洞察先機 | AI 社交媒體分析工具</title>
+    <meta name="description" content="洞察先機 是一款專業的 AI 社交媒體分析工具，幫助您預測內容火爆程度、優化發布策略、分析競爭對手，提升社交媒體表現。">
+    <meta name="keywords" content="社交媒體分析,AI內容分析,火爆程度預測,社群媒體工具,內容優化">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="洞察先機 | AI 社交媒體分析工具">
+    <meta property="og:description" content="專業的 AI 社交媒體分析工具，預測內容火爆程度，優化您的社群媒體策略">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./assets/og-image.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #007AFF;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            background: white;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056CC;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #007AFF;
+            border: 2px solid #007AFF;
+        }
+
+        .btn-secondary:hover {
+            background: #007AFF;
+            color: white;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #2c3e50;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2c3e50;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .pricing h2 {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #2c3e50;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            border-color: #007AFF;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.2);
+        }
+
+        .pricing-card.popular {
+            border-color: #007AFF;
+            background: linear-gradient(135deg, #007AFF08, #5856D608);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #007AFF;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 800;
+            color: #007AFF;
+            margin-bottom: 8px;
+        }
+
+        .price-period {
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .screenshots h2 {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #2c3e50;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screenshot {
+            text-align: center;
+        }
+
+        .screenshot-placeholder {
+            width: 200px;
+            height: 400px;
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            border-radius: 24px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #6c757d;
+            border: 8px solid #2c3e50;
+        }
+
+        .screenshot h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .screenshot p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section ul li a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 20px;
+            text-align: center;
+            color: #bdc3c7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .hero h2 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features h2, .pricing h2, .screenshots h2 {
+                font-size: 32px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">⚡</div>
+                    <div>
+                        <h1>InsightLens</h1>
+                        <div style="font-size: 14px; opacity: 0.9;">洞察先機</div>
+                    </div>
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#features">功能特色</a></li>
+                        <li><a href="#pricing">訂閱方案</a></li>
+                        <li><a href="#screenshots">應用截圖</a></li>
+                        <li><a href="#support">支援服務</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>AI 驅動的社交媒體分析工具</h2>
+            <p>預測內容火爆程度，優化發布策略，分析競爭對手，讓您的社交媒體表現更上一層樓</p>
+            <div class="cta-buttons">
+                <a href="https://apps.apple.com/app/insightlens" class="btn btn-primary">
+                    📱 下載 iOS App
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    🎯 了解更多
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>強大功能特色</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3>AI 火爆程度預測</h3>
+                    <p>運用先進的 AI 技術分析您的內容，預測在社交媒體上的傳播潛力，幫助您創造更具影響力的貼文。</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>智能優化建議</h3>
+                    <p>獲得個人化的內容優化建議，包括文字調整、話題選擇、表達方式改進等，提升內容質量。</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>最佳發布時機</h3>
+                    <p>AI 分析您的受眾活躍時間，推薦最佳發布時機，讓您的內容在最適當的時間觸及最多用戶。</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">#️⃣</div>
+                    <h3>熱門標籤建議</h3>
+                    <p>即時分析社交媒體趨勢，推薦當前最熱門且相關的標籤，增加內容曝光率和互動量。</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>競爭對手分析</h3>
+                    <p>深度分析競爭對手的內容策略，了解成功要素，幫助您制定更有效的社交媒體戰略。</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>詳細分析報告</h3>
+                    <p>提供完整的數據分析報告，包括預測準確度、改進建議、歷史表現追蹤等深度洞察。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2>選擇適合您的方案</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>免費版</h3>
+                    <div class="price">$0</div>
+                    <div class="price-period">永久免費</div>
+                    <ul class="features-list">
+                        <li>AI 優化建議</li>
+                        <li>基礎火爆程度評分</li>
+                        <li>簡單平台建議</li>
+                        <li>每日 3 次預測</li>
+                        <li>保留最近 10 筆記錄</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">立即開始</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <div class="popular-badge">推薦方案</div>
+                    <h3>基礎版</h3>
+                    <div class="price">$180</div>
+                    <div class="price-period">每月</div>
+                    <ul class="features-list">
+                        <li>包含免費版所有功能</li>
+                        <li>最佳發布時間分析</li>
+                        <li>詳細分析報告</li>
+                        <li>無限歷史記錄</li>
+                        <li>每日 10 次預測</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">選擇基礎版</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>專業版</h3>
+                    <div class="price">$480</div>
+                    <div class="price-period">每月</div>
+                    <ul class="features-list">
+                        <li>包含基礎版所有功能</li>
+                        <li>競爭對手分析</li>
+                        <li>熱門標籤建議</li>
+                        <li>無限次預測</li>
+                        <li>數據導出功能</li>
+                        <li>優先客服支援</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">選擇專業版</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section id="screenshots" class="screenshots">
+        <div class="container">
+            <h2>應用截圖</h2>
+            <div class="screenshots-grid">
+                <div class="screenshot">
+                    <div class="screenshot-placeholder">🏠</div>
+                    <h3>簡潔首頁</h3>
+                    <p>直觀的用戶界面，輕鬆開始您的分析之旅</p>
+                </div>
+
+                <div class="screenshot">
+                    <div class="screenshot-placeholder">📝</div>
+                    <h3>內容輸入</h3>
+                    <p>支援多平台內容輸入，智能識別內容類型</p>
+                </div>
+
+                <div class="screenshot">
+                    <div class="screenshot-placeholder">📊</div>
+                    <h3>分析結果</h3>
+                    <p>詳細的分析報告和優化建議，一目了然</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="support">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>產品資訊</h3>
+                    <ul>
+                        <li><a href="#features">功能特色</a></li>
+                        <li><a href="#pricing">訂閱方案</a></li>
+                        <li><a href="#">使用教學</a></li>
+                        <li><a href="#">系統需求</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>支援服務</h3>
+                    <ul>
+                        <li><a href="mailto:support@insightlens.app">技術支援</a></li>
+                        <li><a href="#">常見問題</a></li>
+                        <li><a href="#">使用手冊</a></li>
+                        <li><a href="#">意見回饋</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>法律資訊</h3>
+                    <ul>
+                        <li><a href="#">隱私政策</a></li>
+                        <li><a href="#">服務條款</a></li>
+                        <li><a href="#">訂閱管理</a></li>
+                        <li><a href="#">退款政策</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>關於我們</h3>
+                    <ul>
+                        <li><a href="#">公司簡介</a></li>
+                        <li><a href="#">聯絡我們</a></li>
+                        <li><a href="#">最新消息</a></li>
+                        <li><a href="#">開發團隊</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 JTL 版權所有。專為社交媒體創作者打造的 AI 分析工具。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 滾動動畫
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 為所有 feature-card 和 pricing-card 添加動畫
+        document.querySelectorAll('.feature-card, .pricing-card, .screenshot').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html> 
