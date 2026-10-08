@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>戰神賽特 免費點數版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F0E8D3;
+    --ink: #2A2340;
+    --muted: #6E6488;
+    --panel: #FBF6E8;
+    --board: #24357F;
+    --cell: #2F4396;
+    --gold: #E9B949;
+    --gold-deep: #B8861C;
+    --good: #12A150;
+    --bad: #D93036;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0C1130; --ink: #F1E7C6; --muted: #98A0C8; --panel: #161F4A;
+      --board: #1A2766; --cell: #223382;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0C1130; --ink: #F1E7C6; --muted: #98A0C8; --panel: #161F4A;
+    --board: #1A2766; --cell: #223382;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 12px 12px 28px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+  h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 0.02em; }
+  .tag { font-size: 12px; color: var(--muted); }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0; }
+  .stat { background: var(--panel); border-radius: 10px; padding: 6px 10px; min-width: 0; }
+  .stat span { font-size: 11px; color: var(--muted); }
+  .stat b { display: block; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat.win b { color: var(--good); }
+
+  .mach { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 6px 0 2px; }
+  .mach b { color: var(--ink); font-variant-numeric: tabular-nums; min-width: 62px; text-align: center; }
+  .round.sm { width: 28px; height: 28px; font-size: 18px; }
+  .btn.sm { flex: none; padding: 5px 10px; font-size: 12px; margin-left: auto; }
+  .fsbar { display: none; justify-content: space-between; align-items: center; background: var(--gold); color: #2A1B00; border-radius: 10px; padding: 8px 12px; font-weight: 700; margin-bottom: 8px; }
+  .fsbar.on { display: flex; }
+  .fsbar big { font-size: 20px; font-weight: 900; }
+
+  .stage { position: relative; background: var(--board); border: 4px solid var(--gold); border-radius: 16px; padding: 6px; overflow: hidden; }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  .cell { aspect-ratio: 1; background: var(--cell); border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; }
+  .cell svg { width: 88%; height: 88%; }
+  .cell.fall { animation: fall var(--fall, .38s) cubic-bezier(.3, .7, .4, 1) both; animation-delay: var(--dl, 0ms); }
+  @keyframes fall { from { transform: translateY(calc(var(--dy) * -1 * (100% + 4px))); opacity: .2; } to { transform: none; opacity: 1; } }
+  .cell.win { animation: glow .5s ease-in-out infinite alternate; z-index: 2; background: #4A5FC4; }
+  @keyframes glow { to { transform: scale(1.1); box-shadow: 0 0 14px 4px var(--gold); } }
+  .cell.gone { animation: gone .25s ease-in forwards; }
+  @keyframes gone { to { transform: scale(.1); opacity: 0; } }
+  .cell.flash { animation: glow .4s ease-in-out infinite alternate; z-index: 2; }
+
+  .orb { width: 82%; height: 82%; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: clamp(11px, 3.6vw, 17px); background: radial-gradient(circle at 35% 30%, #FF9AC1, #D72C7B 55%, #6A1B9A); box-shadow: 0 0 10px 2px #E0457B; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+
+  .float { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); font-size: 30px; font-weight: 900; color: #FFE38A; text-shadow: 0 2px 0 #7A4A00, 0 0 12px rgba(0,0,0,.6); pointer-events: none; z-index: 5; white-space: nowrap; animation: floatUp 1.1s ease-out forwards; }
+  @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -110%) scale(1); } }
+  .banner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(8, 12, 40, .78); color: #FFE38A; font-weight: 900; font-size: 30px; z-index: 6; gap: 6px; padding: 16px; }
+  .banner small { font-size: 16px; color: #fff; font-weight: 500; }
+  .banner[hidden] { display: none; }
+
+  .msg { min-height: 22px; margin: 10px 2px 6px; font-size: 14px; color: var(--muted); text-align: center; }
+
+  .controls { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+  .betbox { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .betbox .val { min-width: 54px; text-align: center; }
+  .betbox .val small { display: block; font-size: 11px; color: var(--muted); }
+  .betbox .val b { font-size: 18px; font-variant-numeric: tabular-nums; }
+  .round { appearance: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink); background: transparent; color: var(--ink); font-size: 22px; font-weight: 700; cursor: pointer; line-height: 1; }
+  .spin { appearance: none; width: 86px; height: 86px; border-radius: 50%; border: 4px solid var(--gold-deep); background: radial-gradient(circle at 35% 30%, #FFE38A, var(--gold) 60%, var(--gold-deep)); color: #2A1B00; font: inherit; font-weight: 900; font-size: 20px; cursor: pointer; box-shadow: 0 4px 0 var(--gold-deep); }
+  .spin:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--gold-deep); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .side { display: flex; justify-content: center; }
+  .chk { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+  .chk input { width: 18px; height: 18px; }
+
+  .row2 { display: flex; gap: 8px; margin-top: 12px; }
+  .btn { appearance: none; font: inherit; font-weight: 700; font-size: 14px; flex: 1; padding: 11px 8px; border-radius: 10px; border: 2px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+  .btn.buy { background: var(--ink); color: var(--bg); }
+  .note { margin-top: 14px; font-size: 12px; color: var(--muted); line-height: 1.6; text-align: center; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(8, 12, 30, .65); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+  .overlay[hidden] { display: none; }
+  .sheet { background: var(--bg); color: var(--ink); border-radius: 16px; padding: 18px; max-width: 460px; width: 100%; max-height: 88vh; overflow: auto; }
+  .sheet h2 { margin: 0 0 8px; font-size: 20px; }
+  .sheet p, .sheet li { font-size: 14px; line-height: 1.65; margin: 6px 0; }
+  .sheet ul { padding-left: 18px; }
+  .pt { width: 100%; border-collapse: collapse; margin: 10px 0; font-variant-numeric: tabular-nums; }
+  .pt th, .pt td { padding: 5px 6px; text-align: right; font-size: 14px; border-bottom: 1px solid var(--muted); }
+  .pt th:first-child, .pt td:first-child { text-align: left; }
+  .pt svg { width: 30px; height: 30px; vertical-align: middle; }
+  .pt th { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cell.fall, .cell.win, .cell.flash, .float { animation-duration: .01s; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>戰神賽特</h1>
+    <span class="tag">免費點數版</span>
+  </header>
+
+  <div class="mach"><span>機台</span><button class="round sm" id="mPrev" aria-label="上一台">‹</button><b id="mach">NO.217</b><button class="round sm" id="mNext" aria-label="下一台">›</button><button class="btn sm" id="mRand">隨機選台</button></div>
+
+  <div class="stats">
+    <div class="stat"><span>點數</span><b id="bal">0</b></div>
+    <div class="stat"><span>本局押注</span><b id="betShow">0</b></div>
+    <div class="stat win"><span>本局贏得</span><b id="win">0</b></div>
+  </div>
+
+  <div class="fsbar" id="fsbar">
+    <span>免費遊戲 剩 <big id="fsLeft">0</big> 場</span>
+    <span>累積倍數 <big id="fsMult">×0</big></span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="grid" id="grid"></div>
+    <div class="banner" id="banner" hidden></div>
+  </div>
+  <div class="msg" id="msg">按「旋轉」開始。同一種圖案出現 8 個以上就得分。</div>
+
+  <div class="controls">
+    <div class="betbox">
+      <button class="round" id="betDown" aria-label="降低押注">−</button>
+      <div class="val"><small>押注</small><b id="bet">10</b></div>
+      <button class="round" id="betUp" aria-label="提高押注">+</button>
+    </div>
+    <button class="spin" id="spin">旋轉</button>
+    <div class="side" style="flex-direction:column;gap:8px;align-items:center"><button class="btn sm" id="auto" style="margin:0">自動</button><label class="chk"><input type="checkbox" id="fast">快速</label></div>
+  </div>
+
+  <div class="row2">
+    <button class="btn buy" id="buy">購買免費遊戲</button>
+    <button class="btn" id="rulesBtn">規則與賠率</button>
+  </div>
+
+  <p class="note">這裡只使用免費的虛擬點數，沒有任何真錢，也無法兌換。真實的賭博遊戲長期來看一定是輸的一方，請不要當作賺錢的方法。</p>
+</div>
+
+<div class="overlay" id="rules" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="規則與賠率">
+    <h2>規則與賠率</h2>
+    <ul>
+      <li>6 欄 5 列，沒有賠付線。盤面上任何位置出現 8 個以上相同圖案就得分。</li>
+      <li>得分的圖案會消失，上方的圖案掉落補滿，直到沒有新的得分為止（消除掉落）。</li>
+      <li>聖甲蟲：盤面出現 4 個以上，贏得獎金並觸發 15 場免費遊戲。免費遊戲中出現 3 個以上，再加 5 場，總數上限 100 場。</li>
+      <li>靈魂之火（×2 到 ×500）：掉落結束後全部相加，乘上這一場的贏分。每次消除後，盤面上的靈魂之火有機會升級成更高的倍數。在免費遊戲中倍數會一直累積，之後每一場都乘上累積倍數。</li>
+      <li>神秘寶箱：沒有得分的旋轉有機會開出寶箱，直接獲得 0.5 到 50 倍押注。</li>
+      <li>「購買免費遊戲」花費 100 倍押注，直接進入 15 場免費遊戲。</li>
+      <li>選台只是換機台號碼，所有機台的機率都一樣。</li>
+    </ul>
+    <p>下表數字是「贏得的押注倍數」。</p>
+    <table class="pt" id="paytable"></table>
+    <p>聖甲蟲獎金：4 個 3 倍、5 個 5 倍、6 個 100 倍。單局最高 51,000 倍押注。</p>
+    <button class="btn buy" id="closeRules" style="width:100%">關閉</button>
+  </div>
+</div>
+
+<script>
+(function (root) {
+  var COLS = 6, ROWS = 5, SCAT = 9, ORB = 10;
+  // 8-9 / 10-11 / 12+ pays, in units of (bet / 20)
+  var PAY = [
+    [200, 500, 1000], [50, 200, 500], [40, 100, 300], [30, 40, 240], [20, 30, 200],
+    [16, 24, 160], [10, 20, 100], [8, 18, 80], [5, 15, 40]
+  ];
+  var ORB_VALS = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 50, 100, 250, 500];
+  var ORB_W = [40, 26, 18, 12, 9, 7, 5, 4, 3, 2, 1.5, 0.8, 0.4, 0.15, 0.05];
+  var CFG = {
+    base: { w: [3.2, 4.6, 5.4, 6.4, 8, 9, 10.4, 11.4, 12.4, 1.38, 0.3] },
+    free: { w: [3.2, 4.6, 5.4, 6.4, 8, 9, 10.4, 11.4, 12.4, 0.85, 0.95] }
+  };
+  var SCAT_PAY = { 4: 3, 5: 5, 6: 100 }; // x bet
+  var MAX_WIN = 51000, UP_P = 0.12, CHEST_P = 0.012;
+  var CH_VALS = [0.5, 1, 2, 3, 5, 10, 20, 50], CH_W = [30, 30, 20, 10, 6, 3, 0.8, 0.2];
+
+  function pickWeighted(w, rng) {
+    var t = 0, i;
+    for (i = 0; i < w.length; i++) t += w[i];
+    var r = rng() * t;
+    for (i = 0; i < w.length; i++) { r -= w[i]; if (r < 0) return i; }
+    return w.length - 1;
+  }
+  function randCell(mode, rng) {
+    var i = pickWeighted(CFG[mode].w, rng);
+    if (i === ORB) return { s: ORB, v: ORB_VALS[pickWeighted(ORB_W, rng)] };
+    return { s: i };
+  }
+  function newBoard(mode, rng) {
+    var b = [];
+    for (var c = 0; c < COLS; c++) {
+      var col = [];
+      for (var r = 0; r < ROWS; r++) col.push(randCell(mode, rng));
+      b.push(col);
+    }
+    return b;
+  }
+  function tier(n) { return n >= 12 ? 2 : n >= 10 ? 1 : 0; }
+
+  function evaluate(board) {
+    var pos = {}, s, c, r;
+    for (c = 0; c < COLS; c++) for (r = 0; r < ROWS; r++) {
+      s = board[c][r].s;
+      if (s < 9) (pos[s] = pos[s] || []).push([c, r]);
+    }
+    var groups = [];
+    for (s in pos) {
+      if (pos[s].length >= 8) {
+        groups.push({ s: +s, n: pos[s].length, cells: pos[s], pay: PAY[s][tier(pos[s].length)] / 20 });
+      }
+    }
+    return groups;
+  }
+
+  function spin(mode, rng) {
+    rng = rng || Math.random;
+    var board = newBoard(mode, rng);
+    var initial = board.map(function (c) { return c.slice(); });
+    var steps = [], guard = 0;
+    while (guard++ < 80) {
+      var groups = evaluate(board);
+      if (!groups.length) break;
+      var gone = {}, pay = 0;
+      groups.forEach(function (g) {
+        pay += g.pay;
+        g.cells.forEach(function (p) { gone[p[0] + "," + p[1]] = 1; });
+      });
+      var after = [], dy = [], winners = [];
+      for (var c = 0; c < COLS; c++) {
+        var surv = [], survRows = [];
+        for (var r = 0; r < ROWS; r++) {
+          if (gone[c + "," + r]) winners.push([c, r]);
+          else { surv.push(board[c][r]); survRows.push(r); }
+        }
+        var k = ROWS - surv.length, col = [], d = [], i;
+        for (i = 0; i < k; i++) { col.push(randCell(mode, rng)); d.push(k); }
+        for (i = 0; i < surv.length; i++) { col.push(surv[i]); d.push(k + i - survRows[i]); }
+        after.push(col); dy.push(d);
+      }
+      var ups = [];
+      for (c = 0; c < COLS; c++) for (r = 0; r < ROWS; r++) {
+        var oc = after[c][r];
+        if (oc.s === ORB) {
+          oc = after[c][r] = { s: ORB, v: oc.v };
+          var kk = ORB_VALS.indexOf(oc.v);
+          if (kk < ORB_VALS.length - 1 && rng() < UP_P) { oc.v = ORB_VALS[kk + 1]; ups.push([c, r]); }
+        }
+      }
+      steps.push({ winners: winners, groups: groups, pay: pay, after: after, dy: dy, ups: ups });
+      board = after;
+    }
+    var scat = 0, orbs = [], orbSum = 0;
+    for (var cc = 0; cc < COLS; cc++) for (var rr = 0; rr < ROWS; rr++) {
+      var cell = board[cc][rr];
+      if (cell.s === SCAT) scat++;
+      if (cell.s === ORB) { orbs.push({ c: cc, r: rr, v: cell.v }); orbSum += cell.v; }
+    }
+    var chest = 0;
+    if (!steps.length && scat < 4 && rng() < CHEST_P) chest = CH_VALS[pickWeighted(CH_W, rng)];
+    return { initial: initial, steps: steps, final: board, scat: scat, orbs: orbs, orbSum: orbSum, chest: chest };
+  }
+
+  function scatPay(n) { return n >= 6 ? SCAT_PAY[6] : (SCAT_PAY[n] || 0); }
+  function stepsPay(res) { var t = 0; res.steps.forEach(function (s) { t += s.pay; }); return t; }
+
+  // Headless simulation helpers (used for tuning)
+  function playFree(rng) {
+    var spins = 15, total = 0, mult = 0, played = 0;
+    while (spins > 0 && played < 300) {
+      spins--; played++;
+      var r = spin("free", rng);
+      mult += r.orbSum;
+      var w = stepsPay(r);
+      if (w > 0 && mult > 0) w *= mult;
+      total += w + scatPay(r.scat) + r.chest;
+      if (r.scat >= 3) spins = Math.min(spins + 5, 100 - played);
+    }
+    return total;
+  }
+  function playRound(rng) {
+    var r = spin("base", rng), w = stepsPay(r);
+    if (w > 0 && r.orbSum > 0) w *= r.orbSum;
+    w += scatPay(r.scat) + r.chest;
+    if (r.scat >= 4) w += playFree(rng);
+    return Math.min(w, MAX_WIN);
+  }
+
+  root.SetEngine = {
+    COLS: COLS, ROWS: ROWS, SCAT: SCAT, ORB: ORB, PAY: PAY, MAX_WIN: MAX_WIN,
+    spin: spin, scatPay: scatPay, stepsPay: stepsPay, playFree: playFree, playRound: playRound
+  };
+  if (typeof module !== "undefined") module.exports = root.SetEngine;
+})(typeof window !== "undefined" ? window : this);
+
+</script>
+<script>
+(function () {
+  var E = window.SetEngine;
+  var COLS = E.COLS, ROWS = E.ROWS;
+  var BETS = [0.4, 0.8, 2, 4, 8, 20, 40, 80, 200, 400, 1000, 2000];
+  var START_BAL = 100000;
+  var $ = function (id) { return document.getElementById(id); };
+  var grid = $("grid");
+
+  function gem(col) {
+    return '<svg viewBox="0 0 100 100"><path d="M26 16H74L93 40L50 92L7 40Z" fill="' + col + '" stroke="rgba(0,0,0,.4)" stroke-width="4" stroke-linejoin="round"/>' +
+      '<path d="M7 40H93M26 16L38 40L50 92M74 16L62 40L50 92M38 40L50 16L62 40" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-linejoin="round"/></svg>';
+  }
+  var SYM = [
+    // 0 eye of horus
+    '<svg viewBox="0 0 100 100"><path d="M6 50Q50 12 94 50Q50 88 6 50Z" fill="#F7E9B8" stroke="#B8861C" stroke-width="5"/><circle cx="50" cy="50" r="17" fill="#1E5BD8" stroke="#0B2A73" stroke-width="3"/><circle cx="50" cy="50" r="7" fill="#0A0F2A"/><path d="M50 68V84Q50 93 62 93M32 64L20 82H8" fill="none" stroke="#E9B949" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    // 1 ankh
+    '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="round"><g stroke="#8A5A10" stroke-width="15"><ellipse cx="50" cy="30" rx="16" ry="20"/><path d="M50 50V92M27 64H73"/></g><g stroke="#F4CB5C" stroke-width="9"><ellipse cx="50" cy="30" rx="16" ry="20"/><path d="M50 50V92M27 64H73"/></g></svg>',
+    // 2 was sceptre
+    '<svg viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#8A5A10" stroke-width="14"><path d="M50 92V28"/><path d="M50 28C50 14 68 12 76 20L66 28"/><path d="M50 78L38 94M50 78L62 94"/></g><g stroke="#3FD0C0" stroke-width="8"><path d="M50 92V28"/><path d="M50 28C50 14 68 12 76 20L66 28"/><path d="M50 78L38 94M50 78L62 94"/></g></svg>',
+    // 3 pyramid
+    '<svg viewBox="0 0 100 100"><circle cx="50" cy="18" r="9" fill="#FF7A45"/><path d="M50 26L92 86H8Z" fill="#E7B34B" stroke="#8A5A10" stroke-width="5" stroke-linejoin="round"/><path d="M50 26L92 86H50Z" fill="#C98A25"/><path d="M32 60H68M20 74H80" stroke="#8A5A10" stroke-width="3"/></svg>',
+    gem("#E5384F"), gem("#F2C230"), gem("#9155DD"), gem("#2F80ED"), gem("#25B06A"),
+    // 9 scarab
+    '<svg viewBox="0 0 100 100" stroke-linejoin="round"><path d="M32 50C10 38 4 56 8 70C22 70 30 64 32 58Z" fill="#F4CB5C" stroke="#8A5A10" stroke-width="4"/><path d="M68 50C90 38 96 56 92 70C78 70 70 64 68 58Z" fill="#F4CB5C" stroke="#8A5A10" stroke-width="4"/><ellipse cx="50" cy="60" rx="21" ry="28" fill="#2EC4B6" stroke="#0B6B63" stroke-width="4"/><path d="M50 34V90" stroke="#0B6B63" stroke-width="3"/><circle cx="50" cy="26" r="11" fill="#2EC4B6" stroke="#0B6B63" stroke-width="4"/><path d="M42 16L38 8M58 16L62 8" stroke="#0B6B63" stroke-width="4" stroke-linecap="round"/></svg>'
+  ];
+  var NAMES = ["荷魯斯之眼", "安卡", "權杖", "金字塔", "紅寶石", "黃寶石", "紫寶石", "藍寶石", "綠寶石"];
+
+  var autoLeft = 0, autoPick = 0, machine = 217, balance = START_BAL, betIdx = 4, busy = false, freeLeft = 0, fsMult = 0;
+  try { var sv = parseFloat(localStorage.getItem("seth_bal")); if (isFinite(sv) && sv >= 0) balance = sv; } catch (e) {}
+
+  function fmt(n) { return (Math.round(n * 100) / 100).toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+  function bet() { return BETS[betIdx]; }
+  function T() { return $("fast").checked ? 0.35 : 1; }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms * T()); }); }
+  function save() { try { localStorage.setItem("seth_bal", String(balance)); } catch (e) {} }
+  function say(t) { $("msg").textContent = t; }
+
+  function updateUI() {
+    $("bal").textContent = fmt(balance);
+    $("bet").textContent = fmt(bet());
+    $("auto").textContent = autoLeft > 0 ? "停止 " + autoLeft : "自動";
+    $("mPrev").disabled = $("mNext").disabled = $("mRand").disabled = busy;
+    $("betShow").textContent = fmt(bet());
+    $("buy").textContent = "購買免費遊戲 " + fmt(bet() * 100) + " 點";
+    $("betDown").disabled = busy || betIdx === 0;
+    $("betUp").disabled = busy || betIdx === BETS.length - 1;
+    $("spin").disabled = busy;
+    $("buy").disabled = busy;
+    $("fast").disabled = false;
+    $("fsbar").classList.toggle("on", freeLeft > 0 || (busy && fsMult > 0));
+    $("fsLeft").textContent = freeLeft;
+    $("fsMult").textContent = "×" + fsMult;
+    if (!busy && balance < BETS[0]) {
+      $("spin").textContent = "補充";
+    } else { $("spin").textContent = "旋轉"; }
+  }
+
+  function cellInner(c) {
+    if (c.s === E.ORB) return '<div class="orb">×' + c.v + "</div>";
+    return SYM[c.s];
+  }
+
+  function draw(board, dy, delayFn) {
+    var h = "";
+    for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
+      var d = dy ? dy[c][r] : 0;
+      var st = d ? ' style="--dy:' + d + ";--dl:" + (delayFn ? delayFn(c, r) * T() : 0) + 'ms"' : "";
+      h += '<div class="cell' + (d ? " fall" : "") + '"' + st + ">" + cellInner(board[c][r]) + "</div>";
+    }
+    grid.style.setProperty("--fall", (0.38 * T()) + "s");
+    grid.innerHTML = h;
+  }
+  function el(c, r) { return grid.children[r * COLS + c]; }
+
+  function floatText(t) {
+    var d = document.createElement("div");
+    d.className = "float";
+    d.textContent = t;
+    d.style.animationDuration = (1.1 * T()) + "s";
+    $("stage").appendChild(d);
+    setTimeout(function () { d.remove(); }, 1200 * T());
+  }
+  async function banner(html, ms) {
+    var b = $("banner");
+    b.innerHTML = html;
+    b.hidden = false;
+    await sleep(ms);
+    b.hidden = true;
+  }
+
+  async function play(free) {
+    var res = E.spin(free ? "free" : "base");
+    var b = bet();
+    draw(res.initial, res.initial.map(function (col) { return col.map(function () { return 5; }); }),
+      function (c, r) { return c * 50 + (ROWS - r) * 15; });
+    await sleep(750);
+
+    var run = 0;
+    for (var i = 0; i < res.steps.length; i++) {
+      var st = res.steps[i];
+      st.winners.forEach(function (p) { el(p[0], p[1]).classList.add("win"); });
+      await sleep(550);
+      run += st.pay;
+      floatText("+" + fmt(st.pay * b));
+      $("win").textContent = fmt(run * b);
+      st.winners.forEach(function (p) { var e = el(p[0], p[1]); e.classList.remove("win"); e.classList.add("gone"); });
+      await sleep(260);
+      draw(st.after, st.dy, function (c) { return c * 25; });
+      await sleep(520);
+      if (st.ups.length) {
+        st.ups.forEach(function (p) { el(p[0], p[1]).classList.add("flash"); });
+        await sleep(450);
+      }
+    }
+
+    // orbs
+    var mult = res.orbSum;
+    if (res.orbs.length) {
+      res.orbs.forEach(function (o) { el(o.c, o.r).classList.add("flash"); });
+      await sleep(600);
+    }
+    if (free) { fsMult += res.orbSum; mult = fsMult; updateUI(); }
+    var w = run;
+    if (w > 0 && mult > 0) {
+      w = run * mult;
+      floatText("×" + mult + "  " + fmt(w * b));
+      await sleep(700);
+    }
+
+    // scatters
+    var sp = E.scatPay(res.scat);
+    var scatOn = res.scat >= 4 || (free && res.scat >= 3);
+    if (res.scat >= 3) {
+      for (var c = 0; c < COLS; c++) for (var r = 0; r < ROWS; r++)
+        if (res.final[c][r].s === E.SCAT) el(c, r).classList.add("flash");
+      if (scatOn) await sleep(700);
+    }
+    if (sp > 0) { w += sp; floatText("聖甲蟲 +" + fmt(sp * b)); }
+    if (res.chest > 0) {
+      await banner("神秘寶箱<small>獲得 " + fmt(res.chest * b) + " 點</small>", 1500);
+      w += res.chest;
+    }
+    w = Math.min(w, E.MAX_WIN);
+    return { win: w * b, scat: res.scat };
+  }
+
+  async function runFree(fromBuy) {
+    var b = bet();
+    freeLeft = 15; fsMult = 0;
+    var totalSpins = 15, played = 0, total = 0;
+    updateUI();
+    await banner('免費遊戲<small>15 場，靈魂之火會一直累積</small>', 1500);
+    while (freeLeft > 0) {
+      freeLeft--; played++;
+      updateUI();
+      $("win").textContent = "0";
+      say("免費遊戲第 " + played + " 場");
+      var f = await play(true);
+      total += f.win;
+      balance += f.win; save();
+      $("win").textContent = fmt(f.win);
+      if (f.scat >= 3 && totalSpins < 100) {
+        var add = Math.min(5, 100 - totalSpins);
+        totalSpins += add; freeLeft += add;
+        floatText("+" + add + " 場");
+        await sleep(600);
+      }
+      updateUI();
+      await sleep(350);
+    }
+    say("免費遊戲結束");
+    await banner('免費遊戲結束<small>共贏得 ' + fmt(total) + ' 點（' + fmt(total / b) + ' 倍押注）</small>', 2200);
+    fsMult = 0; freeLeft = 0;
+    return total;
+  }
+
+  async function onSpin() {
+    if (busy) return;
+    if (balance < BETS[0]) { balance = START_BAL; save(); updateUI(); say("已補充 " + fmt(START_BAL) + " 點。"); return; }
+    if (balance < bet()) { say("點數不足，請降低押注。"); return; }
+    busy = true;
+    balance -= bet(); save();
+    $("win").textContent = "0";
+    say("旋轉中…");
+    updateUI();
+    var r = await play(false);
+    balance += r.win; save();
+    var total = r.win;
+    if (r.scat >= 4) {
+      say("聖甲蟲出現 " + r.scat + " 個，觸發免費遊戲！");
+      await sleep(500);
+      await runFree(false);
+      say("回到主遊戲，按「旋轉」繼續。");
+    } else if (total > 0) {
+      say("贏得 " + fmt(total) + " 點（" + fmt(total / bet()) + " 倍押注）");
+      var x = total / bet(), tt = x >= 200 ? "SUPER WIN" : x >= 60 ? "MEGA WIN" : x >= 20 ? "BIG WIN" : "";
+      if (tt) await banner(tt + "<small>" + fmt(total) + " 點（" + fmt(x) + " 倍）</small>", 1800);
+    } else {
+      say("這次沒有得分。");
+    }
+    busy = false;
+    if (autoLeft > 0) {
+      autoLeft--;
+      if (balance >= bet()) { updateUI(); setTimeout(onSpin, 600 * T()); return; }
+      autoLeft = 0;
+    }
+    updateUI();
+  }
+
+  async function onBuy() {
+    if (busy) return;
+    var cost = bet() * 100;
+    if (balance < cost) { say("點數不足：購買需要 " + fmt(cost) + " 點。"); return; }
+    busy = true;
+    balance -= cost; save();
+    updateUI();
+    await runFree(true);
+    say("回到主遊戲，按「旋轉」繼續。");
+    busy = false;
+    updateUI();
+  }
+
+  // paytable
+  (function () {
+    var h = "<tr><th>圖案</th><th>8–9 個</th><th>10–11 個</th><th>12 個以上</th></tr>";
+    for (var s = 0; s < 9; s++) {
+      h += "<tr><td>" + SYM[s] + " " + NAMES[s] + "</td>";
+      for (var t = 0; t < 3; t++) h += "<td>×" + fmt(E.PAY[s][t] / 20) + "</td>";
+      h += "</tr>";
+    }
+    $("paytable").innerHTML = h;
+  })();
+
+  $("betDown").addEventListener("click", function () { if (betIdx > 0) { betIdx--; updateUI(); } });
+  $("betUp").addEventListener("click", function () { if (betIdx < BETS.length - 1) { betIdx++; updateUI(); } });
+  $("spin").addEventListener("click", function () { autoLeft = 0; onSpin(); });
+  $("auto").addEventListener("click", function () {
+    if (autoLeft > 0) { autoLeft = 0; updateUI(); return; }
+    var opts = [10, 25, 50, 100];
+    autoLeft = opts[autoPick++ % 4];
+    if (!busy) { autoLeft--; updateUI(); onSpin(); } else updateUI();
+  });
+  function setMach(n) { machine = ((n - 1 + 650) % 650) + 1; $("mach").textContent = "NO." + machine; }
+  $("mPrev").addEventListener("click", function () { setMach(machine - 1); });
+  $("mNext").addEventListener("click", function () { setMach(machine + 1); });
+  $("mRand").addEventListener("click", function () { setMach(1 + Math.floor(Math.random() * 650)); say("已換到機台 " + machine + "，機率不變。"); });
+  $("buy").addEventListener("click", onBuy);
+  $("rulesBtn").addEventListener("click", function () { $("rules").hidden = false; });
+  $("closeRules").addEventListener("click", function () { $("rules").hidden = true; });
+  document.addEventListener("keydown", function (e) {
+    if (e.code === "Space" && !$("rules").hidden === false && e.target.tagName !== "INPUT") { e.preventDefault(); onSpin(); }
+  });
+
+  // first board
+  var first = E.spin("base");
+  while (first.steps.length) first = E.spin("base");
+  var idle = first.initial;
+  draw(idle, null);
+  updateUI();
+})();
+</script>
+</body>
+</html>
